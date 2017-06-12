@@ -130,7 +130,7 @@
               break;
             case "defaultDate":
 
-              config[attr] = (value === 'now')? new Date(): new Date(value));
+              config[attr] = (value === 'now')? new Date(): new Date(value);
               break;
 
             // Elements
