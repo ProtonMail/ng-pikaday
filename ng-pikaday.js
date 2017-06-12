@@ -37,7 +37,6 @@
         pikaday: '=',
         minDate: '=',
         maxDate: '=',
-        defaultDate: '=',
         onSelect: '&',
         onOpen: '&',
         onClose: '&',
@@ -165,6 +164,7 @@
               modelCtrl.$setValidity('date', false);
               return modelValue;
             }
+            picker.setDate(date);
             return hasMoment? moment(date).format(picker._o.format) : date.toDateString();
           });
 
