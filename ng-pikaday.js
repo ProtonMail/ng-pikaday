@@ -50,41 +50,141 @@
 
         var config = { field: elem[0] };
 
+          // Init config Object
 
-        // instantiate pikaday with config, bind to scope, add destroy event callback
-        var picker = new Pikaday(config);
-        if (attrs.pikaday) {
-          scope.pikaday = picker;
-        }
+          var config = { field: elem[0], onSelect: function () {
+              setTimeout(function(){
+                  scope.$apply();
+              });
+          }};
+          var hasMoment = typeof moment === 'function';
+          // Decorate config with globals
 
-        if (modelCtrl) {
-          modelCtrl.$formatters.push(function (modelValue) {
-            if (!modelValue) {
-              return modelValue
-            }
-            var date = new Date(Date.parse(modelValue));
-            if (date == "Invalid Date") {
-              modelCtrl.$setValidity('date', false);
-              return modelValue;
-            }
-            picker.setDate(date);
-            return hasMoment? moment(date).format(picker._o.format) : date.toDateString();
+          angular.forEach(pikadayConfig, function (value, key) {
+              config[key] = value;
           });
 
-          modelCtrl.$parsers.push(function (viewValue) {
-            return picker.getDate();
+          // Decorate/Overide config with inline attributes
+
+          angular.forEach(attrs.$attr, function (dashAttr) {
+              var attr = attrs.$normalize(dashAttr); // normalize = ToCamelCase()
+              applyConfig(attr, attrs[attr]);
           });
 
+          function applyConfig (attr, value) {
+              switch (attr) {
 
-            elem[0].addEventListener('blur', () => { modelCtrl.$setViewValue(picker.getDate()); });
+                  // Booleans, Integers & Arrays
 
+                  case "setDefaultDate":
+                  case "bound":
+                  case "reposition":
+                  case "disableWeekends":
+                  case "showWeekNumber":
+                  case "isRTL":
+                  case "showMonthAfterYear":
+                  case "firstDay":
+                  case "yearRange":
+                  case "numberOfMonths":
+                  case "mainCalendar":
+
+                      config[attr] = scope.$eval(value);
+                      break;
+
+                  // Functions
+
+                  case "onSelect":
+                  case "onOpen":
+                  case "onClose":
+                  case "onDraw":
+                  case "disableDayFn":
+
+                      config[attr] = scope[attr];
+                      break;
+
+                  // Strings
+
+                  case "format":
+                  case "position":
+                  case "theme":
+                  case "yearSuffix":
+
+                      config[attr] = value;
+                      break;
+
+                  // Dates
+
+                  case "minDate":
+                      scope.$watch('minDate', function (nValue) {
+                          if (!nValue) return;
+                          picker.setMinDate(nValue);
+                      });
+                      break;
+                  case "maxDate":
+                      scope.$watch('maxDate', function (nValue) {
+                          if (!nValue) return;
+                          picker.setMaxDate(nValue);
+                      });
+                      break;
+                  case "defaultDate":
+
+                      config[attr] = (value === 'now')? new Date(): new Date(value);
+                      break;
+
+                  // Elements
+
+                  case "trigger":
+                  case "container":
+
+                      config[attr] = document.getElementById(value);
+                      break;
+
+                  // Translations
+
+                  case "i18n":
+
+                      config[attr] = pikadayConfig.locales[value];
+
+              }
+          }
+
+
+          // instantiate pikaday with config, bind to scope, add destroy event callback
+          var picker = new Pikaday(config);
+          if (attrs.pikaday) {
+            scope.pikaday = picker;
+          }
+
+          var hasMoment = typeof moment === 'function';
+
+          if (modelCtrl) {
+            modelCtrl.$formatters.push(function (modelValue) {
+              if (!modelValue) {
+                return modelValue
+              }
+              var date = new Date(Date.parse(modelValue));
+              if (date == "Invalid Date") {
+                modelCtrl.$setValidity('date', false);
+                return modelValue;
+              }
+              picker.setDate(date);
+              return hasMoment? moment(date).format(picker._o.format) : date.toDateString();
+            });
+
+            modelCtrl.$parsers.push(function (viewValue) {
+              return picker.getDate();
+            });
+
+              const pushDateFromPikadayToNgmodel = function() { modelCtrl.$setViewValue(picker.getDate()); };
+              elem[0].addEventListener('blur', pushDateFromPikadayToNgmodel);
+              scope.$on('$destroy', pushDateFromPikadayToNgmodel);
+          }
+
+          scope.$on('$destroy', function () {
+            picker.destroy();
+          });
         }
-
-        scope.$on('$destroy', function () {
-          picker.destroy();
-        });
-      }
-    };
+      };
   }
 
 }));
