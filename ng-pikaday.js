@@ -166,7 +166,9 @@
 
           var pushDateFromPikadayToNgmodel = function() { modelCtrl.$setViewValue(picker.getDate()); };
           elem[0].addEventListener('blur', pushDateFromPikadayToNgmodel);
-          scope.$on('$destroy', pushDateFromPikadayToNgmodel);
+          scope.$on('$destroy', function () {
+            elem[0].removeEventListener('blur', pushDateFromPikadayToNgmodel);
+          });
         }
 
         scope.$on('$destroy', function () {
