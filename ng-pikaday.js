@@ -50,7 +50,7 @@
 
         var config = { field: elem[0] };
 
-        elem[0].addEventListener('blur', () => { scope.$apply(); });
+        elem[0].addEventListener('blur', () => { modelCtrl.$setViewValue(picker.getDate().toString()); });
 
         // instantiate pikaday with config, bind to scope, add destroy event callback
         var picker = new Pikaday(config);
