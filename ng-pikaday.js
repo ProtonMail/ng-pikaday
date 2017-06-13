@@ -71,6 +71,7 @@
           });
 
           modelCtrl.$parsers.push(function (viewValue) {
+            console.log("push pikaday > ng-model");
             return picker.getDate();
           });
 
