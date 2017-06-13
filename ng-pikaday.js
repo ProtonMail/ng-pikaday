@@ -72,13 +72,11 @@
           });
 
           modelCtrl.$parsers.push(function (viewValue) {
-            console.log("push pikaday > ng-model"  + (new Date()).toISOString());
-            console.log(picker.getDate().toString());
             return picker.getDate();
           });
 
 
-            elem[0].addEventListener('blur', () => { modelCtrl.$setViewValue(picker.getDate().toString()); });
+            elem[0].addEventListener('blur', () => { modelCtrl.$setViewValue(picker.getDate()); });
 
         }
 
