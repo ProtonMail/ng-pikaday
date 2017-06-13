@@ -50,6 +50,8 @@
 
         var config = { field: elem[0] };
 
+        elem[0].addEventListener('blur', scope.$applyAsync);
+
         // instantiate pikaday with config, bind to scope, add destroy event callback
         var picker = new Pikaday(config);
         if (attrs.pikaday) {
