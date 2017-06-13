@@ -46,13 +46,10 @@
       require: '?ngModel',
       link: function (scope, elem, attrs, modelCtrl) {
 
-        // Init config Object
+        // Init config Object, onSelect is not scope.$apply is not needed, that is handled by angular automatically
 
-        var config = { field: elem[0], onSelect: function () {
-          setTimeout(function(){
-            scope.$apply();
-          });
-        }};
+        var config = { field: elem[0] };
+        
         var hasMoment = typeof moment === 'function';
         // Decorate config with globals
 
@@ -95,12 +92,7 @@
             case "onDraw":
             case "disableDayFn":
 
-              config[attr] = function (date) {
-                setTimeout(function(){
-                  scope.$apply();
-                });
-                return scope[attr]({ pikaday: this, date: date });
-              };
+              config[attr] = scope[attr];
               break;
 
             // Strings
@@ -164,6 +156,7 @@
               modelCtrl.$setValidity('date', false);
               return modelValue;
             }
+            picker.setDate(date);
             return hasMoment? moment(date).format(picker._o.format) : date.toDateString();
           });
 
