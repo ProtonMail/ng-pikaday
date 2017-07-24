@@ -27,7 +27,21 @@
         config = configs;
       };
     })
-    .directive('pikaday', ['pikadayConfig', pikadayDirectiveFn]);
+      .factory('pikadayConfiguration', function (pikadayConfig) {
+
+        var config = pikadayConfig;
+
+        function get() {
+          return angular.copy(config);
+        }
+
+        function update(patchConfig) {
+          config = angular.extend(config, patchConfig);
+        }
+
+        return { get: get, update: update };
+    })
+    .directive('pikaday', ['pikadayConfiguration', pikadayDirectiveFn]);
 
   function pikadayDirectiveFn(pikadayConfig) {
 
@@ -53,7 +67,7 @@
         var hasMoment = typeof moment === 'function';
         // Decorate config with globals
 
-        angular.forEach(pikadayConfig, function (value, key) {
+        angular.forEach(pikadayConfig.get(), function (value, key) {
           config[key] = value;
         });
 
@@ -136,7 +150,7 @@
 
             case "i18n":
 
-              config[attr] = pikadayConfig.locales[value];
+              config[attr] = pikadayConfig.get().locales[value];
 
           }
         }
