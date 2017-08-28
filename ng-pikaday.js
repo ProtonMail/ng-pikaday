@@ -27,7 +27,7 @@
         config = configs;
       };
     })
-      .factory('pikadayConfiguration', function (pikadayConfig) {
+      .factory('pikadayConfiguration', ['pikadayConfig', function (pikadayConfig) {
 
         var config = pikadayConfig;
 
@@ -40,7 +40,7 @@
         }
 
         return { get: get, update: update };
-    })
+    }])
     .directive('pikaday', ['pikadayConfiguration', pikadayDirectiveFn]);
 
   function pikadayDirectiveFn(pikadayConfig) {
@@ -63,7 +63,7 @@
         // Init config Object, onSelect is not scope.$apply is not needed, that is handled by angular automatically
 
         var config = { field: elem[0] };
-        
+
         var hasMoment = typeof moment === 'function';
         // Decorate config with globals
 
