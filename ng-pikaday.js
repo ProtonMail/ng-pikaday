@@ -178,7 +178,14 @@
             return picker.getDate();
           });
 
-          var pushDateFromPikadayToNgmodel = function() { modelCtrl.$setViewValue(picker.getDate()); };
+          var pushDateFromPikadayToNgmodel = function() {
+            var oldValue = modelCtrl.$modelValue && modelCtrl.$modelValue.getTime();
+            var value = picker.getDate();
+            var newValue = value && value.getTime();
+            if (oldValue !== newValue) {
+              modelCtrl.$setViewValue(value);
+            }
+          };
           elem[0].addEventListener('blur', pushDateFromPikadayToNgmodel);
           scope.$on('$destroy', function () {
             elem[0].removeEventListener('blur', pushDateFromPikadayToNgmodel);
